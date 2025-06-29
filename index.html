@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitSync: Your Daily Fitness & Diet Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a192f; /* Navy blue */
+            --secondary: #f8a12f; /* Gold */
+            --accent: #64ffda; /* Teal */
+            --light: #e6f1ff; /* Light blue */
+            --dark: #020c1b; /* Dark blue */
+            --white: #ffffff;
+            --gray: #ccd6f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .logo span {
+            color: var(--white);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 2rem;
+        }
+
+        nav ul li a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary);
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        section {
+            background: var(--white);
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+            display: inline-block;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        #progress-container {
+            margin-top: 2rem;
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            width: 0;
+            transition: width 1s ease-in-out;
+        }
+
+        .plan-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .plan-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            background: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .social-links a {
+            color: var(--white);
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--secondary);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: flex;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .exercise-item, .meal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .complete-btn {
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .preference-badge {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .update-notification {
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 0.5rem;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal (shown by default) -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('login-modal')">&times;</span>
+            <h2>Welcome to FitSync</h2>
+            <div class="logo" style="text-align: center; margin-bottom: 1.5rem;">Fit<span style="color: var(--primary);">Sync</span></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" placeholder="Enter any email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter any password" required>
+                </div>
+                <button type="button" class="btn" onclick="login()">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application (hidden until login) -->
+    <div id="app-container" style="display: none;">
+        <header>
+            <div class="container header-content">
+                <div class="logo">Fit<span>Sync</span></div>
+                <nav>
+                    <ul>
+                        <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="#exercise-library"><i class="fas fa-dumbbell"></i> Exercises</a></li>
+                        <li><a href="#meal-library"><i class="fas fa-utensils"></i> Meals</a></li>
+                        <li><a href="#progress-tracker"><i class="fas fa-chart-line"></i> Progress</a></li>
+                        <li><a href="#settings"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="container">
+            <section id="home">
+                <h2>Welcome to FitSync</h2>
+                <p>Your personal fitness and diet companion designed to help you achieve your health goals efficiently.</p>
+                <div style="margin-top: 2rem;">
+                    <a href="#dashboard" class="btn">Get Started</a>
+                    <a href="#settings" class="btn" style="margin-left: 1rem;">Set Preferences</a>
+                </div>
+            </section>
+
+            <section id="dashboard">
+                <h2>Today's Personalized Plan <span class="preference-badge" id="current-goal">Set Your Goal</span></h2>
+                <div id="update-notification" style="display: none;" class="update-notification">
+                    ✨ Your plan has been updated based on your preferences!
+                </div>
+                
+                <div class="plan-card">
+                    <h3><i class="fas fa-dumbbell" style="color: var(--secondary);"></i> Workout Plan</h3>
+                    <div id="workout-items">
+                        <p style="color: #888; font-style: italic;">Please set your preferences in Settings to get a personalized workout plan.</p>
+                    </div>
+                </div>
+                
+                <div class="plan-card">
+                    <h3><i class="fas fa-utensils" style="color: var(--secondary);"></i> Meal Plan</h3>
+                    <div id="meal-items">
+                        <p style="color: #888; font-style: italic;">Please set your preferences in Settings to get a personalized meal plan.</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 1.5rem;">Today's Progress</h3>
+                <div id="progress-container">
+                    <div id="progress-bar"></div>
+                </div>
+                <div style="margin-top: 1rem; text-align: right;">
+                    <span id="progress-text">0% Complete</span>
+                </div>
+            </section>
+
+            <section id="exercise-library">
+                <h2>Exercise Library</h2>
+                <div class="plan-card" id="exercise-list">
+                    <p style="color: #888; font-style: italic;">Set your preferences to see personalized exercises.</p>
+                </div>
+            </section>
+
+            <section id="meal-library">
+                <h2>Meal Library</h2>
+                <div class="plan-card" id="meal-list">
+                    <p style="color: #888; font-style: italic;">Set your preferences to see personalized meals.</p>
+                </div>
+            </section>
+
+            <section id="progress-tracker">
+                <h2>Progress Tracker</h2>
+                <div class="plan-card">
+                    <h3>Weekly Summary</h3>
+                    <p><i class="fas fa-check-circle" style="color: var(--accent);"></i> Workouts completed: <span id="workouts-completed">0</span>/5</p>
+                    <p><i class="fas fa-utensils" style="color: var(--secondary);"></i> Meals logged: <span id="meals-logged">0</span>/21</p>
+                    <p><i class="fas fa-trophy" style="color: var(--secondary);"></i> Current streak: <span id="current-streak">0</span> days</p>
+                </div>
+            </section>
+
+            <section id="settings">
+                <h2>Personal Preferences</h2>
+                <form id="settings-form" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label for="goal">Fitness Goal:</label>
+                        <select id="goal">
+                            <option value="">Select your goal</option>
+                            <option value="fat-loss">Fat Loss</option>
+                            <option value="muscle-gain">Muscle Gain</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="level">Experience Level:</label>
+                        <select id="level">
+                            <option value="">Select your level</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dietary-preference">Dietary Preference:</label>
+                        <select id="dietary-preference">
+                            <option value="">Select preference</option>
+                            <option value="standard">Standard</option>
+                            <option value="vegetarian">Vegetarian</option>
+                            <option value="vegan">Vegan</option>
+                            <option value="keto">Keto</option>
+                            <option value="paleo">Paleo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Current Weight (kg):</label>
+                        <input type="number" id="weight" min="30" max="200" placeholder="Enter your weight">
+                    </div>
+                    <div class="form-group">
+                        <label for="height">Height (cm):</label>
+                        <input type="number" id="height" min="100" max="250" placeholder="Enter your height">
+                    </div>
+                    <div class="form-group">
+                        <label for="workout-days">Workout Days per Week:</label>
+                        <select id="workout-days">
+                            <option value="">Select days</option>
+                            <option value="3">3 days</option>
+                            <option value="4">4 days</option>
+                            <option value="5">5 days</option>
+                            <option value="6">6 days</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn" onclick="saveSettings()">Update Preferences & Generate Plan</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // User preferences storage
+        let userPreferences = {};
+        let completedItems = 0;
+        let totalItems = 0;
+
+        // Exercise database based on goals and levels
+        const exerciseDatabase = {
+            'fat-loss': {
+                'beginner': [
+                    { name: "Walking", sets: "30 minutes" },
+                    { name: "Bodyweight Squats", sets: "3 sets × 10 reps" },
+                    { name: "Push-ups (modified)", sets: "3 sets × 8 reps" },
+                    { name: "Plank", sets: "3 sets × 20 seconds" }
+                ],
+                'intermediate': [
+                    { name: "HIIT Cardio", sets: "20 minutes" },
+                    { name: "Burpees", sets: "4 sets × 8 reps" },
+                    { name: "Jump Squats", sets: "4 sets × 12 reps" },
+                    { name: "Mountain Climbers", sets: "3 sets × 30 seconds" }
+                ],
+                'advanced': [
+                    { name: "Sprint Intervals", sets: "8 × 30 seconds" },
+                    { name: "Burpee Box Jumps", sets: "5 sets × 10 reps" },
+                    { name: "Thrusters", sets: "4 sets × 15 reps" },
+                    { name: "Battle Ropes", sets: "4 sets × 45 seconds" }
+                ]
+            },
+            'muscle-gain': {
+                'beginner': [
+                    { name: "Bench Press", sets: "3 sets × 8 reps" },
+                    { name: "Bent-over Rows", sets: "3 sets × 8 reps" },
+                    { name: "Shoulder Press", sets: "3 sets × 10 reps" },
+                    { name: "Squats", sets: "3 sets × 10 reps" }
+                ],
+                'intermediate': [
+                    { name: "Deadlifts", sets: "4 sets × 6 reps" },
+                    { name: "Incline Bench Press", sets: "4 sets × 8 reps" },
+                    { name: "Pull-ups", sets: "4 sets × 6 reps" },
+                    { name: "Bulgarian Split Squats", sets: "3 sets × 10 each leg" }
+                ],
+                'advanced': [
+                    { name: "Heavy Deadlifts", sets: "5 sets × 3 reps" },
+                    { name: "Weighted Pull-ups", sets: "4 sets × 5 reps" },
+                    { name: "Front Squats", sets: "4 sets × 6 reps" },
+                    { name: "Weighted Dips", sets: "4 sets × 8 reps" }
+                ]
+            },
+            'maintenance': {
+                'beginner': [
+                    { name: "Brisk Walking", sets: "30 minutes" },
+                    { name: "Light Dumbbell Rows", sets: "3 sets × 12 reps" },
+                    { name: "Wall Push-ups", sets: "3 sets × 15 reps" },
+                    { name: "Bodyweight Squats", sets: "3 sets × 12 reps" }
+                ],
+                'intermediate': [
+                    { name: "Moderate Cardio", sets: "25 minutes" },
+                    { name: "Push-ups", sets: "3 sets × 12 reps" },
+                    { name: "Dumbbell Rows", sets: "3 sets × 10 reps" },
+                    { name: "Lunges", sets: "3 sets × 10 each leg" }
+                ],
+                'advanced': [
+                    { name: "Circuit Training", sets: "30 minutes" },
+                    { name: "Pull-ups", sets: "3 sets × 8 reps" },
+                    { name: "Bench Press", sets: "3 sets × 10 reps" },
+                    { name: "Squats", sets: "3 sets × 12 reps" }
+                ]
+            }
+        };
+
+        // Meal database based on goals and dietary preferences
+        const mealDatabase = {
+            'fat-loss': {
+                'standard': [
+                    { name: "Greek yogurt with berries", type: "Breakfast", calories: "250 cal" },
+                    { name: "Grilled chicken salad with olive oil", type: "Lunch", calories: "400 cal" },
+                    { name: "Baked salmon with steamed vegetables", type: "Dinner", calories: "450 cal" }
+                ],
+                'vegetarian': [
+                    { name: "Oatmeal with almond butter and banana", type: "Breakfast", calories: "300 cal" },
+                    { name: "Quinoa bowl with roasted vegetables", type: "Lunch", calories: "350 cal" },
+                    { name: "Lentil curry with brown rice", type: "Dinner", calories: "400 cal" }
+                ],
+                'vegan': [
+                    { name: "Chia pudding with coconut milk", type: "Breakfast", calories: "280 cal" },
+                    { name: "Buddha bowl with tahini dressing", type: "Lunch", calories: "380 cal" },
+                    { name: "Tofu stir-fry with brown rice", type: "Dinner", calories: "420 cal" }
+                ]
+            },
+            'muscle-gain': {
+                'standard': [
+                    { name: "Protein pancakes with banana", type: "Breakfast", calories: "450 cal" },
+                    { name: "Chicken breast with sweet potato", type: "Lunch", calories: "600 cal" },
+                    { name: "Lean beef with quinoa and vegetables", type: "Dinner", calories: "650 cal" }
+                ],
+                'vegetarian': [
+                    { name: "Protein smoothie with oats", type: "Breakfast", calories: "400 cal" },
+                    { name: "Chickpea curry with naan", type: "Lunch", calories: "550 cal" },
+                    { name: "Paneer tikka with brown rice", type: "Dinner", calories: "600 cal" }
+                ],
+                'vegan': [
+                    { name: "Protein smoothie with hemp seeds", type: "Breakfast", calories: "420 cal" },
+                    { name: "Tempeh stir-fry with quinoa", type: "Lunch", calories: "500 cal" },
+                    { name: "Lentil dal with sweet potato", type: "Dinner", calories: "580 cal" }
+                ]
+            },
+            'maintenance': {
+                'standard': [
+                    { name: "Whole grain toast with avocado", type: "Breakfast", calories: "350 cal" },
+                    { name: "Turkey sandwich with vegetables", type: "Lunch", calories: "450 cal" },
+                    { name: "Grilled fish with roasted vegetables", type: "Dinner", calories: "500 cal" }
+                ],
+                'vegetarian': [
+                    { name: "Vegetable omelet with toast", type: "Breakfast", calories: "320 cal" },
+                    { name: "Caprese salad with whole grain bread", type: "Lunch", calories: "400 cal" },
+                    { name: "Vegetable pasta with parmesan", type: "Dinner", calories: "480 cal" }
+                ],
+                'vegan': [
+                    { name: "Smoothie bowl with granola", type: "Breakfast", calories: "340 cal" },
+                    { name: "Hummus wrap with vegetables", type: "Lunch", calories: "380 cal" },
+                    { name: "Vegetable curry with rice", type: "Dinner", calories: "460 cal" }
+                ]
+            }
+        };
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function login() {
+            closeModal('login-modal');
+            document.getElementById('app-container').style.display = 'block';
+            loadUserPreferences();
+        }
+
+        function logout() {
+            document.getElementById('app-container').style.display = 'none';
+            openModal('login-modal');
+        }
+
+        function loadUserPreferences() {
+            // Load saved preferences (in a real app, this would come from a database)
+            const savedPrefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+            userPreferences = savedPrefs;
+            
+            // Update form fields
+            Object.keys(savedPrefs).forEach(key => {
+                const element = document.getElementById(key.replace('_', '-'));
+                if (element) element.value = savedPrefs[key];
+            });
+            
+            if (Object.keys(savedPrefs).length > 0) {
+                updatePersonalizedContent();
+            }
+        }
+
+        function saveSettings() {
+            // Get all form values
+            userPreferences = {
+                goal: document.getElementById('goal').value,
+                level: document.getElementById('level').value,
+                dietary_preference: document.getElementById('dietary-preference').value,
+                weight: document.getElementById('weight').value,
+                height: document.getElementById('height').value,
+                workout_days: document.getElementById('workout-days').value
+            };
+
+            // Validate required fields
+            if (!userPreferences.goal || !userPreferences.level || !userPreferences.dietary_preference) {
+                alert('Please fill in all required fields (Goal, Level, and Dietary Preference)');
+                return;
+            }
+
+            // Save preferences (in a real app, this would save to a database)
+            localStorage.setItem('userPreferences', JSON.stringify(userPreferences));
+            
+            // Update personalized content
+            updatePersonalizedContent();
+            
+            // Show success message
+            const notification = document.getElementById('update-notification');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+
+            alert('Preferences saved! Your personalized plan has been updated.');
+        }
+
+        function updatePersonalizedContent() {
+            const { goal, level, dietary_preference } = userPreferences;
+            
+            if (!goal || !level || !dietary_preference) return;
+
+            // Update goal badge
+            const goalBadge = document.getElementById('current-goal');
+            goalBadge.textContent = goal.charAt(0).toUpperCase() + goal.slice(1).replace('-', ' ');
+
+            // Update exercises
+            const exercises = exerciseDatabase[goal] && exerciseDatabase[goal][level] ? 
+                exerciseDatabase[goal][level] : [];
+            
+            const workoutContainer = document.getElementById('workout-items');
+            const exerciseList = document.getElementById('exercise-list');
+            
+            if (exercises.length > 0) {
+                const exerciseHTML = exercises.map(exercise => 
+                    `<div class="exercise-item">
+                        <span>${exercise.name}: ${exercise.sets}</span>
+                        <button class="complete-btn" onclick="completeExercise(this)">Complete</button>
+                    </div>`
+                ).join('');
+                
+                workoutContainer.innerHTML = exerciseHTML;
+                exerciseList.innerHTML = exerciseHTML;
+            }
+
+            // Update meals
+            const meals = mealDatabase[goal] && mealDatabase[goal][dietary_preference] ? 
+                mealDatabase[goal][dietary_preference] : [];
+            
+            const mealContainer = document.getElementById('meal-items');
+            const mealList = document.getElementById('meal-list');
+            
+            if (meals.length > 0) {
+                const mealHTML = meals.map(meal => 
+                    `<div class="meal-item">
+                        <span>${meal.type}: ${meal.name} (${meal.calories})</span>
+                        <button class="complete-btn" onclick="completeMeal(this)">Log</button>
+                    </div>`
+                ).join('');
+                
+                mealContainer.innerHTML = mealHTML;
+                mealList.innerHTML = mealHTML;
+            }
+
+            // Update total items for progress tracking
+            totalItems = exercises.length + meals.length;
+            updateProgress();
+        }
+
+        function completeExercise(button) {
+            const exerciseItem = button.parentElement;
+            exerciseItem.style.textDecoration = "line-through";
+            exerciseItem.style.color = "#888";
+            button.disabled = true;
+            button.textContent = "✓ Done";
+            completedItems++;
+            updateProgress();
+        }
+
+        function completeMeal(button) {
+            const mealItem = button.parentElement;
+            mealItem.style.textDecoration = "line-through";
+            mealItem.style.color = "#888";
+            button.disabled = true;
+            button.textContent = "✓ Logged";
+            completedItems++;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (totalItems === 0) return;
+            
+            const percentage = Math.round((completedItems / totalItems) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = percentage + '% Complete';
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show login modal by default
+            openModal('login-modal');
+        });
+    </script>
+</body>
+</html>
